@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vocabulary Comprehension Quiz</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #dbe3ef;
+      --primary: #2563eb;
+      --primary-soft: #e8f0ff;
+      --success: #15803d;
+      --success-soft: #ecfdf3;
+      --danger: #b91c1c;
+      --danger-soft: #fef2f2;
+      --warning: #9a3412;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #eff6ff 0%, var(--bg) 180px);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 14px 14px 30px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 22px 18px;
+      margin-top: 10px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 1.7rem;
+      line-height: 1.2;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0 0 12px;
+      line-height: 1.5;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .pill {
+      background: #f3f4f6;
+      color: #374151;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.92rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.08s ease, opacity 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .btn-disabled {
+      background: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding-top: 8px;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .status-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+
+    .timer {
+      background: #111827;
+      color: white;
+      min-width: 88px;
+      justify-content: center;
+    }
+
+    .timer.low {
+      background: #b91c1c;
+    }
+
+    .question-card {
+      padding: 18px 16px;
+      margin-bottom: 12px;
+    }
+
+    .question-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .type-badge {
+      background: var(--primary-soft);
+      color: #1d4ed8;
+      border: 1px solid #cfe0ff;
+      font-size: 0.84rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .q-number {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .question-text {
+      font-size: 1.08rem;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      border: 1.5px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      padding: 14px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      text-align: left;
+      width: 100%;
+      font-size: 1rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .option:hover {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+
+    .option.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .option-key {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 1px;
+    }
+
+    .nav-card {
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .qnav-btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      padding: 12px 0;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .qnav-btn.current {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+
+    .qnav-btn.answered {
+      background: #ecfdf3;
+      border-color: #a7f3d0;
+      color: #166534;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .submit-wrap {
+      padding: 14px;
+    }
+
+    .submit-note {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .summary-card {
+      padding: 18px 16px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    .score {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 6px 0 10px;
+    }
+
+    .score.good { color: var(--success); }
+    .score.mid { color: #b45309; }
+    .score.low { color: var(--danger); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mini-stat {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f9fafb;
+    }
+
+    .mini-stat .label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+
+    .mini-stat .value {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .type-breakdown {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .type-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    details.review-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      overflow: hidden;
+    }
+
+    details.review-item[open] {
+      box-shadow: var(--shadow);
+    }
+
+    summary.review-summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 14px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    summary.review-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .status-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-correct {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .status-wrong {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .status-unanswered {
+      background: #fff7ed;
+      color: var(--warning);
+    }
+
+    .review-body {
+      border-top: 1px solid var(--line);
+      padding: 0 14px 14px;
+    }
+
+    .review-body p {
+      margin-top: 12px;
+      margin-bottom: 0;
+    }
+
+    .answer-line {
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 0.96rem;
+    }
+
+    .your-answer {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .correct-answer {
+      background: var(--success-soft);
+      border: 1px solid #bbf7d0;
+    }
+
+    .explanation {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .footer-space {
+      height: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .app {
+        padding: 10px 10px 26px;
+      }
+
+      .hero, .question-card, .nav-card, .summary-card {
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 1.45rem;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .question-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .qnav-btn {
+        padding: 11px 0;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section id="startScreen" class="screen active">
+      <div class="card hero">
+        <h1>Vocabulary Comprehension Quiz</h1>
+        <p class="muted">40 multiple-choice questions based on your vocabulary list.</p>
+        <div class="pill-row">
+          <span class="pill">30-minute countdown</span>
+          <span class="pill">Phone-friendly layout</span>
+          <span class="pill">Answers hidden until the end</span>
+          <span class="pill">5 question types</span>
+        </div>
+        <p><strong>Question types:</strong> word definitions, context sentence gap fill, synonyms and antonyms, infer meaning from context, and cloze.</p>
+        <p><strong>Important:</strong> You can only see the correct answers after you answer all 40 questions or when the timer reaches 00:00.</p>
+        <button id="startBtn" class="btn btn-primary">Start Quiz</button>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <div class="topbar">
+        <div class="card topbar-inner">
+          <div class="status-wrap">
+            <span class="badge" id="progressBadge">Answered 0 / 40</span>
+            <span class="badge" id="remainingBadge">Remaining 40</span>
+          </div>
+          <span class="badge timer" id="timerBadge">30:00</span>
+        </div>
+      </div>
+
+      <div class="card question-card" id="questionCard"></div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="prevBtn">Previous</button>
+        <button class="btn btn-secondary" id="nextBtn">Next</button>
+      </div>
+
+      <div class="card nav-card">
+        <div class="nav-header">
+          <span>Question Navigator</span>
+          <span class="muted" id="currentLabel">Question 1 of 40</span>
+        </div>
+        <div class="question-grid" id="questionGrid"></div>
+      </div>
+
+      <div class="card submit-wrap">
+        <div class="submit-note" id="submitNote">Submit will unlock when all 40 questions are answered. If time runs out, the quiz will submit automatically.</div>
+        <button id="submitBtn" class="btn btn-disabled" disabled>Submit Quiz</button>
+      </div>
+      <div class="footer-space"></div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="card summary-card">
+        <h2>Quiz Results</h2>
+        <p class="muted" id="resultMessage"></p>
+        <div class="score" id="scoreText">0 / 40</div>
+        <div class="summary-grid">
+          <div class="mini-stat">
+            <div class="label">Percentage</div>
+            <div class="value" id="percentText">0%</div>
+          </div>
+          <div class="mini-stat">
+            <div class="label">Unanswered</div>
+            <div class="value" id="unansweredText">0</div>
+          </div>
+        </div>
+        <div class="type-breakdown" id="typeBreakdown"></div>
+      </div>
+
+      <div class="card summary-card">
+        <h2>Answer Review</h2>
+        <p class="muted">Open each item to check your answer, the correct answer, and a short explanation.</p>
+        <div class="review-list" id="reviewList"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="retryBtn">Try Again</button>
+        <button class="btn btn-primary" id="backTopBtn">Back to Top</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const questions = [{"type": "Word definition", "prompt": "Which word means <strong>full involvement in something</strong>?", "options": ["immersion", "controversy", "certification", "collapse"], "answer": 0, "explanation": "Immersion means being deeply involved in an activity, experience, or environment."}, {"type": "Word definition", "prompt": "Which word means <strong>graduates of a school or university</strong>?", "options": ["pedestrians", "alumni", "species", "opponents"], "answer": 1, "explanation": "Alumni are former students who have graduated from a school or university."}, {"type": "Word definition", "prompt": "Which word means <strong>an experienced guide or adviser</strong>?", "options": ["mentor", "corporation", "lane", "forecast"], "answer": 0, "explanation": "A mentor is someone more experienced who gives advice and support."}, {"type": "Word definition", "prompt": "Which word means <strong>the practice of involving everyone</strong>?", "options": ["rental", "inclusion", "isolation", "publicity"], "answer": 1, "explanation": "Inclusion means making sure all people are involved and welcomed."}, {"type": "Word definition", "prompt": "Which word means <strong>a difficult choice or problem</strong>?", "options": ["dilemma", "strategy", "sanctuary", "budget"], "answer": 0, "explanation": "A dilemma is a situation in which you must make a difficult decision."}, {"type": "Word definition", "prompt": "Which word means <strong>false or inaccurate information</strong>?", "options": ["justification", "misinformation", "compliance", "innovation"], "answer": 1, "explanation": "Misinformation is information that is wrong or misleading."}, {"type": "Word definition", "prompt": "Which word means <strong>real and able to be touched</strong>?", "options": ["tangible", "marine", "promising", "dominant"], "answer": 0, "explanation": "Tangible describes something real and physical, not abstract."}, {"type": "Word definition", "prompt": "Which word means <strong>unfair use of someone or something</strong>?", "options": ["conservation", "launch", "exploitation", "shade"], "answer": 2, "explanation": "Exploitation means using people or resources unfairly for benefit."}, {"type": "Word definition", "prompt": "Which word means <strong>a safe protected place</strong>?", "options": ["marketplace", "sanctuary", "pavement", "forecast"], "answer": 1, "explanation": "A sanctuary is a place where people or animals are kept safe."}, {"type": "Word definition", "prompt": "Which word means <strong>the amount of business done in a period</strong>?", "options": ["turnover", "capital", "publicity", "lane"], "answer": 0, "explanation": "Turnover refers to the amount of sales or business activity over time."}, {"type": "Context sentence gap fill", "prompt": "After moving to a new city, she felt a strong sense of ______ until her neighbours invited her to dinner.", "options": ["belonging", "innovation", "isolation", "compliance"], "answer": 2, "explanation": "Isolation fits because she felt alone before people welcomed her."}, {"type": "Context sentence gap fill", "prompt": "The university hopes to ______ a stronger sense of community among first-year students.", "options": ["cultivate", "refute", "penalise", "bleach"], "answer": 0, "explanation": "Cultivate means to develop or grow something over time."}, {"type": "Context sentence gap fill", "prompt": "The school decided to ______ smoking inside all campus buildings.", "options": ["launch", "prohibit", "socialise", "forecast"], "answer": 1, "explanation": "Prohibit means to officially forbid something."}, {"type": "Context sentence gap fill", "prompt": "Good project managers ______ the most urgent tasks before less important ones.", "options": ["decompose", "criticise", "prioritise", "displace"], "answer": 2, "explanation": "Prioritise means deciding what is most important first."}, {"type": "Context sentence gap fill", "prompt": "Plastic waste can ______ marine animals and damage entire ecosystems.", "options": ["threaten", "defend", "secure", "launch"], "answer": 0, "explanation": "Threaten means to put something in danger."}, {"type": "Context sentence gap fill", "prompt": "The charity depends on public ______ to pay for its education programmes.", "options": ["turnover", "funding", "forecast", "compliance"], "answer": 1, "explanation": "Funding means money provided for a purpose."}, {"type": "Context sentence gap fill", "prompt": "Employees must stay in ______ with safety rules when working in the lab.", "options": ["publicity", "compliance", "controversy", "extinction"], "answer": 1, "explanation": "Compliance means following rules, standards, or laws."}, {"type": "Context sentence gap fill", "prompt": "The company plans to ______ its new learning app next month.", "options": ["launch", "block", "shade", "refute"], "answer": 0, "explanation": "Launch means to introduce or start something new."}, {"type": "Context sentence gap fill", "prompt": "Before the conference started, the ______ checked the schedule, booked the room, and emailed every speaker.", "options": ["apprentice", "opponent", "coordinator", "pedestrian"], "answer": 2, "explanation": "A coordinator is a person who organises people, events, or tasks."}, {"type": "Context sentence gap fill", "prompt": "When ocean temperatures rise too much, coral can ______ and lose its colour.", "options": ["bleach", "thrive", "curate", "volunteer"], "answer": 0, "explanation": "Bleach means to lose colour; coral bleaching happens under environmental stress."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is <strong>closest in meaning</strong> to <strong>authentic</strong>?", "options": ["genuine", "toxic", "dynamic", "dominant"], "answer": 0, "explanation": "Authentic and genuine both mean real, true, and not fake."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is the <strong>opposite</strong> of <strong>opponent</strong>?", "options": ["mentor", "proponent", "critic", "species"], "answer": 1, "explanation": "An opponent is against something; a proponent supports it."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is <strong>closest in meaning</strong> to <strong>prohibit</strong>?", "options": ["allow", "encourage", "forbid", "explain"], "answer": 2, "explanation": "Prohibit means to forbid or officially stop something."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is <strong>closest in meaning</strong> to <strong>crucial</strong>?", "options": ["ordinary", "essential", "minor", "separate"], "answer": 1, "explanation": "Crucial means extremely important, similar to essential."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is the <strong>opposite</strong> of <strong>excessive</strong>?", "options": ["limited", "valuable", "famous", "connected"], "answer": 0, "explanation": "Excessive means too much; limited suggests not too much."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is <strong>closest in meaning</strong> to <strong>nuanced</strong>?", "options": ["simple", "subtle", "public", "dangerous"], "answer": 1, "explanation": "Nuanced means showing small but important differences, like subtle."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is the <strong>opposite</strong> of <strong>transparent</strong> in meaning?", "options": ["clear", "honest", "secretive", "open"], "answer": 2, "explanation": "Transparent means open and easy to understand; secretive is the opposite."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which phrase is <strong>closest in meaning</strong> to <strong>liveable</strong>?", "options": ["easy to borrow", "comfortable to live in", "full of traffic", "far from the sea"], "answer": 1, "explanation": "Liveable means suitable, pleasant, and comfortable for living."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which word is <strong>closest in meaning</strong> to <strong>defend</strong>?", "options": ["ignore", "support", "separate", "predict"], "answer": 1, "explanation": "Defend can mean protect or support an idea, person, or action."}, {"type": "Recognising synonyms and antonyms", "prompt": "Which phrase is <strong>closest in meaning</strong> to <strong>controversy</strong>?", "options": ["careful planning", "public disagreement", "private advice", "clear success"], "answer": 1, "explanation": "A controversy is a topic that causes public disagreement."}, {"type": "Infer meaning from context", "prompt": "The mentor met the apprentice every Friday, showed her how to use the tools, and gave feedback on her work. What does <strong>apprentice</strong> most likely mean?", "options": ["a person learning a job from a skilled worker", "a manager who hires new staff", "a customer buying expensive tools", "a teacher working at a university"], "answer": 0, "explanation": "The context shows that the apprentice is still learning from a more experienced person."}, {"type": "Infer meaning from context", "prompt": "Even after reading the report, his stance did not change; he still believed the factory should close. What does <strong>stance</strong> most likely mean?", "options": ["schedule", "personal opinion or position", "financial problem", "way of walking"], "answer": 1, "explanation": "His stance is the view or position he continues to hold."}, {"type": "Infer meaning from context", "prompt": "The road was closed to cars, so only pedestrians and cyclists could enter. What does <strong>pedestrians</strong> most likely mean?", "options": ["people walking on foot", "police officers", "public buses", "students living nearby"], "answer": 0, "explanation": "Because cars were banned, pedestrians must mean people who walk."}, {"type": "Infer meaning from context", "prompt": "Because the fish nursery is protected, young fish can grow there safely before moving into deeper water. What does <strong>nursery</strong> most likely mean here?", "options": ["a place where young animals grow", "a fishing boat", "a shop that sells seafood", "a law against pollution"], "answer": 0, "explanation": "The sentence explains that young fish grow safely there, so it is a protected growing area."}, {"type": "Infer meaning from context", "prompt": "The market for handmade soap is small but profitable; it serves a niche group of customers. What does <strong>niche</strong> most likely mean?", "options": ["a large international market", "a small specialised group or area", "a sudden business failure", "a government tax"], "answer": 1, "explanation": "The sentence says the market is small and specific, which matches niche."}, {"type": "Infer meaning from context", "prompt": "The scientist used quantitative data such as percentages and test scores, not personal stories. What does <strong>quantitative</strong> most likely mean?", "options": ["related to numbers", "difficult to explain", "based on feelings", "secret and private"], "answer": 0, "explanation": "Percentages and scores are numerical, so quantitative means related to numbers."}, {"type": "Infer meaning from context", "prompt": "Several ideas were discussed, but the most promising one was the low-cost design teachers could use immediately. What does <strong>promising</strong> most likely mean?", "options": ["causing public anger", "likely to be successful", "too expensive to continue", "already legally required"], "answer": 1, "explanation": "The idea sounds useful and practical, so promising means likely to work well."}, {"type": "Infer meaning from context", "prompt": "The brand is renowned for excellent customer service, and people across the country know its name. What does <strong>renowned</strong> most likely mean?", "options": ["newly created", "famous and respected", "hard to understand", "full of risk"], "answer": 1, "explanation": "If people everywhere know the brand for good service, it is renowned."}, {"type": "Infer meaning from context", "prompt": "After the storm, the old bridge was in danger of collapse, so nobody was allowed to cross it. What does <strong>collapse</strong> most likely mean?", "options": ["sudden failure or falling down", "careful repair work", "official permission", "strong public support"], "answer": 0, "explanation": "The bridge was unsafe because it might suddenly fail or fall."}, {"type": "Infer meaning from context", "prompt": "The plan sounds altruistic because the company will give free meals to workers' families without expecting extra profit. What does <strong>altruistic</strong> most likely mean?", "options": ["focused only on numbers", "caring more about others than yourself", "mainly interested in publicity", "designed to reduce colour"], "answer": 1, "explanation": "The company is helping others without expecting gain, so altruistic fits."}];
+    const letters = ["A", "B", "C", "D"];
+    const totalQuestions = questions.length;
+    const quizSeconds = 30 * 60;
+
+    let currentIndex = 0;
+    let answers = Array(totalQuestions).fill(null);
+    let timeLeft = quizSeconds;
+    let timerId = null;
+    let finished = false;
+    let submittedByTimeout = false;
+
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const questionCard = document.getElementById("questionCard");
+    const questionGrid = document.getElementById("questionGrid");
+    const progressBadge = document.getElementById("progressBadge");
+    const remainingBadge = document.getElementById("remainingBadge");
+    const timerBadge = document.getElementById("timerBadge");
+    const currentLabel = document.getElementById("currentLabel");
+    const submitBtn = document.getElementById("submitBtn");
+    const submitNote = document.getElementById("submitNote");
+    const resultMessage = document.getElementById("resultMessage");
+    const scoreText = document.getElementById("scoreText");
+    const percentText = document.getElementById("percentText");
+    const unansweredText = document.getElementById("unansweredText");
+    const typeBreakdown = document.getElementById("typeBreakdown");
+    const reviewList = document.getElementById("reviewList");
+
+    document.getElementById("startBtn").addEventListener("click", startQuiz);
+    document.getElementById("prevBtn").addEventListener("click", () => goToQuestion(currentIndex - 1));
+    document.getElementById("nextBtn").addEventListener("click", () => goToQuestion(currentIndex + 1));
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      if (!submitBtn.disabled) finishQuiz(false);
+    });
+    document.getElementById("retryBtn").addEventListener("click", resetQuiz);
+    document.getElementById("backTopBtn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+    function startQuiz() {
+      startScreen.classList.remove("active");
+      quizScreen.classList.add("active");
+      resultScreen.classList.remove("active");
+      renderNavigator();
+      renderQuestion();
+      updateStatus();
+      startTimer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          submittedByTimeout = true;
+          finishQuiz(true);
+        }
+      }, 1000);
+      updateTimer();
+    }
+
+    function updateTimer() {
+      const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+      const secs = String(timeLeft % 60).padStart(2, "0");
+      timerBadge.textContent = `${mins}:${secs}`;
+      timerBadge.classList.toggle("low", timeLeft <= 300);
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      const selected = answers[currentIndex];
+
+      const optionsHtml = q.options.map((option, idx) => `
+        <button class="option ${selected === idx ? "selected" : ""}" onclick="selectOption(${idx})">
+          <span class="option-key">${letters[idx]}</span>
+          <span>${option}</span>
+        </button>
+      `).join("");
+
+      questionCard.innerHTML = `
+        <div class="question-head">
+          <span class="type-badge">${q.type}</span>
+          <span class="q-number">Question ${currentIndex + 1} of ${totalQuestions}</span>
+        </div>
+        <div class="question-text">${q.prompt}</div>
+        <div class="options">${optionsHtml}</div>
+      `;
+
+      currentLabel.textContent = `Question ${currentIndex + 1} of ${totalQuestions}`;
+      document.getElementById("prevBtn").disabled = currentIndex === 0;
+      document.getElementById("nextBtn").disabled = currentIndex === totalQuestions - 1;
+
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      prevBtn.className = "btn " + (currentIndex === 0 ? "btn-disabled" : "btn-secondary");
+      nextBtn.className = "btn " + (currentIndex === totalQuestions - 1 ? "btn-disabled" : "btn-secondary");
+    }
+
+    function selectOption(idx) {
+      if (finished) return;
+      answers[currentIndex] = idx;
+      renderQuestion();
+      renderNavigator();
+      updateStatus();
+    }
+
+    window.selectOption = selectOption;
+
+    function renderNavigator() {
+      questionGrid.innerHTML = questions.map((_, idx) => {
+        const classes = [
+          "qnav-btn",
+          idx === currentIndex ? "current" : "",
+          answers[idx] !== null ? "answered" : ""
+        ].filter(Boolean).join(" ");
+        return `<button class="${classes}" onclick="jumpTo(${idx})">${idx + 1}</button>`;
+      }).join("");
+    }
+
+    function jumpTo(idx) {
+      goToQuestion(idx);
+    }
+
+    window.jumpTo = jumpTo;
+
+    function goToQuestion(idx) {
+      if (idx < 0 || idx >= totalQuestions) return;
+      currentIndex = idx;
+      renderQuestion();
+      renderNavigator();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function updateStatus() {
+      const answered = answers.filter(v => v !== null).length;
+      const remaining = totalQuestions - answered;
+      progressBadge.textContent = `Answered ${answered} / ${totalQuestions}`;
+      remainingBadge.textContent = `Remaining ${remaining}`;
+
+      const allAnswered = answered === totalQuestions;
+      submitBtn.disabled = !allAnswered || finished;
+      submitBtn.className = "btn " + (submitBtn.disabled ? "btn-disabled" : "btn-primary");
+      submitNote.textContent = allAnswered
+        ? "All questions answered. You can submit now."
+        : `Submit will unlock when all 40 questions are answered. ${remaining} still to go.`;
+    }
+
+    function finishQuiz(fromTimeout) {
+      if (finished) return;
+      finished = true;
+      clearInterval(timerId);
+
+      quizScreen.classList.remove("active");
+      resultScreen.classList.add("active");
+
+      const answeredCount = answers.filter(v => v !== null).length;
+      const unansweredCount = totalQuestions - answeredCount;
+
+      let score = 0;
+      const byType = {};
+
+      questions.forEach((q, idx) => {
+        if (!byType[q.type]) {
+          byType[q.type] = { correct: 0, total: 0 };
+        }
+        byType[q.type].total += 1;
+        if (answers[idx] === q.answer) {
+          score += 1;
+          byType[q.type].correct += 1;
+        }
+      });
+
+      const percent = Math.round((score / totalQuestions) * 100);
+      scoreText.textContent = `${score} / ${totalQuestions}`;
+      scoreText.className = "score " + (percent >= 80 ? "good" : percent >= 60 ? "mid" : "low");
+      percentText.textContent = `${percent}%`;
+      unansweredText.textContent = unansweredCount;
+
+      resultMessage.textContent = fromTimeout
+        ? "Time is up, so the quiz was submitted automatically."
+        : "You completed all 40 questions and submitted the quiz.";
+
+      typeBreakdown.innerHTML = Object.entries(byType).map(([type, stats]) => `
+        <div class="type-row">
+          <span>${type}</span>
+          <strong>${stats.correct} / ${stats.total}</strong>
+        </div>
+      `).join("");
+
+      reviewList.innerHTML = questions.map((q, idx) => {
+        const userAnswer = answers[idx];
+        const isCorrect = userAnswer === q.answer;
+        const unanswered = userAnswer === null;
+
+        let statusClass = "status-wrong";
+        let statusText = "Incorrect";
+        if (unanswered) {
+          statusClass = "status-unanswered";
+          statusText = "Unanswered";
+        } else if (isCorrect) {
+          statusClass = "status-correct";
+          statusText = "Correct";
+        }
+
+        const yourAnswerText = unanswered ? "No answer selected" : `${letters[userAnswer]}. ${q.options[userAnswer]}`;
+        const correctAnswerText = `${letters[q.answer]}. ${q.options[q.answer]}`;
+
+        return `
+          <details class="review-item">
+            <summary class="review-summary">
+              <span>Q${idx + 1}. ${stripHtml(q.prompt).slice(0, 65)}${stripHtml(q.prompt).length > 65 ? "..." : ""}</span>
+              <span class="status-chip ${statusClass}">${statusText}</span>
+            </summary>
+            <div class="review-body">
+              <p><strong>Type:</strong> ${q.type}</p>
+              <p>${q.prompt}</p>
+              <div class="answer-line your-answer"><strong>Your answer:</strong> ${yourAnswerText}</div>
+              <div class="answer-line correct-answer"><strong>Correct answer:</strong> ${correctAnswerText}</div>
+              <div class="answer-line explanation"><strong>Explanation:</strong> ${q.explanation}</div>
+            </div>
+          </details>
+        `;
+      }).join("");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function stripHtml(input) {
+      const div = document.createElement("div");
+      div.innerHTML = input;
+      return div.textContent || div.innerText || "";
+    }
+
+    function resetQuiz() {
+      currentIndex = 0;
+      answers = Array(totalQuestions).fill(null);
+      timeLeft = quizSeconds;
+      finished = false;
+      submittedByTimeout = false;
+
+      resultScreen.classList.remove("active");
+      startScreen.classList.add("active");
+      quizScreen.classList.remove("active");
+      reviewList.innerHTML = "";
+      updateTimer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
